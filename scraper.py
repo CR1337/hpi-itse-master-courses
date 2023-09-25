@@ -2,8 +2,10 @@ from typing import List
 
 import requests
 from bs4 import BeautifulSoup
+from tqdm import tqdm
 
 from course import Course
+from ui import Ui
 from xslx_writer import XlsxWriter
 
 
@@ -75,16 +77,26 @@ class Scraper:
         return course
 
     def scrape(self) -> List[Course]:
+        print("Scraping course overview...")
         overview = self._request_soup(self.OVERVIEW_URL)
+        print("Extracting course URLs...")
         course_links = self._get_course_links(overview)
-        course_soups = [self._request_soup(link) for link in course_links]
+        print("Scraping courses...")
+        course_soups = [
+            self._request_soup(link) for link in tqdm(course_links)
+        ]
+        print("Extracting courses...")
         courses = [
-            self._get_course(course_soup) for course_soup in course_soups
+            self._get_course(course_soup) for course_soup in tqdm(course_soups)
         ]
         return courses
 
 
 if __name__ == "__main__":
+    filename = Ui.ask_filename(".xlsx")
+    print(f"Using file {filename}.")
     courses = Scraper().scrape()
-    for course in courses:
-        print(course)
+    print("Writing courses to file...")
+    writer = XlsxWriter(courses)
+    writer.write(filename)
+    print("Done.")
