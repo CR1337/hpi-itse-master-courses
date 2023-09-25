@@ -44,15 +44,10 @@ class Scraper:
         return "".join(h1.text.split("(")[:-1]).strip()
 
     def _get_categories(self, course_soup: BeautifulSoup) -> List[str]:
-        ul = course_soup.find("ul", {'class': "tx_dscclipclap_content"})
-        lis = ul.find_all("li")
-        categories = []
-        for li in lis:
-            text = li.text
-            for categorie in Course.CATEGORIES:
-                if categorie in text:
-                    categories.append(categorie)
-        return list(set(categories))
+        return [
+            category for category in Course.CATEGORIES
+            if category in str(course_soup)
+        ]
 
     def _get_course(self, course_soup: BeautifulSoup) -> Course:
         ul = course_soup.find(
