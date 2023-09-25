@@ -1,7 +1,10 @@
-from bs4 import BeautifulSoup
-import requests
 from typing import List
+
+import requests
+from bs4 import BeautifulSoup
+
 from course import Course
+from xslx_writer import XlsxWriter
 
 
 class Scraper:
